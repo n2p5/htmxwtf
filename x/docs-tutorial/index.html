@@ -1,0 +1,19 @@
+<html>
+<head>
+    <title>Docs Tutorial</title>
+</head>
+<script src="/htmx.min.js"></script>
+<body>
+    <h1>Docs Tutorial</h1>
+    <p>This is the Docs Tutorial page.</p>
+    <div id="parent-div">
+        <p>Click the button below to see the magic happen!</p>
+    </div>
+    <button hx-post="/clicked"
+        hx-trigger="click"
+        hx-target="#parent-div"
+        hx-swap="outerHTML">
+        Click Me!
+    </button>
+</body>
+</html>

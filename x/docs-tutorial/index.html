@@ -15,5 +15,17 @@
         hx-swap="outerHTML">
         Click Me!
     </button>
+
+    <div hx-post="/mouse_entered" hx-trigger="mouseenter delay:5s">
+        <p>[Here Mouse, Mouse!]</p>
+    </div>
+
+    <div hx-post="/mouse_entered" hx-trigger="every 1s">
+        <p>[Here Mouse, Mouse!]</p>
+    </div>
+
+    <div hx-get="/clicked" hx-trigger="click[shiftKey]">
+        <p>Shift+Click Me</p>
+    </div>
 </body>
 </html>

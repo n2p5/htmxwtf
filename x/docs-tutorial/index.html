@@ -2,8 +2,10 @@
 <head>
     <title>Docs Tutorial</title>
 </head>
-<script src="/htmx.min.js"></script>
-<body>
+<script src="/tailwind.3.4.16.min.js"></script>
+<script src="/htmx.2.0.4.min.js"></script>
+
+<body class="bg-gray-900 text-white">
     <h1>Docs Tutorial</h1>
     <p>This is the Docs Tutorial page.</p>
     <div id="parent-div">
@@ -12,7 +14,9 @@
     <button hx-post="/clicked"
         hx-trigger="click"
         hx-target="#parent-div"
-        hx-swap="outerHTML">
+        hx-swap="outerHTML"
+        type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+        >
         Click Me!
     </button>
 

@@ -6,6 +6,18 @@ import (
 	"time"
 )
 
+func logHeaders(handler http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		fmt.Println("--- Headers: ---")
+		for name, values := range r.Header {
+			for _, value := range values {
+				fmt.Printf("%s: %s\n", name, value)
+			}
+		}
+		handler(w, r)
+	}
+}
+
 func mouseEnteredHandler() http.HandlerFunc {
 	counter := 0
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -35,7 +47,7 @@ func main() {
 		w.Write([]byte(`<p>This was a delayed click</p>`))
 	})
 
-	http.HandleFunc("/mouse_entered", mouseEnteredHandler())
+	http.HandleFunc("/mouse_entered", logHeaders(mouseEnteredHandler()))
 
 	http.ListenAndServe(":8080", nil)
 }

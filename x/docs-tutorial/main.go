@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"time"
 )
 
 func mouseEnteredHandler() http.HandlerFunc {
@@ -27,6 +28,11 @@ func main() {
 
 	http.HandleFunc("/clicked", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(`<div id="parent-div"><p>woot<p></div>`))
+	})
+
+	http.HandleFunc("/click-delayed", func(w http.ResponseWriter, r *http.Request) {
+		time.Sleep(2 * time.Second)
+		w.Write([]byte(`<p>This was a delayed click</p>`))
 	})
 
 	http.HandleFunc("/mouse_entered", mouseEnteredHandler())

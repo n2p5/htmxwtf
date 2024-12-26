@@ -47,6 +47,10 @@ func main() {
 		w.Write([]byte(`<p>This was a delayed click</p>`))
 	})
 
+	http.HandleFunc("/account", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte(`<p>Account page</p>`))
+	})
+
 	http.HandleFunc("/mouse_entered", logHeaders(mouseEnteredHandler()))
 
 	http.ListenAndServe(":8080", nil)

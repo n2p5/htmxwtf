@@ -44,5 +44,20 @@
     <div hx-get="/account" hx-push-url="/account">
         Go to My Account
     </div>
+
+    <form hx-post="/store">
+        <input id="title" name="title" type="text"
+            hx-post="/validate"
+            hx-trigger="change"
+            hx-target="#submit-button"
+            hx-swap="outerHTML">
+        <input id="name" name="name" type="text"
+            hx-post="/validate"
+            hx-trigger="change"
+            hx-target="#submit-button"
+            hx-swap="outerHTML">
+        <button id="submit-button" type="submit" disabled>Submit</button>
+    </form>
+
 </body>
 </html>

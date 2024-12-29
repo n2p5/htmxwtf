@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -30,6 +31,16 @@ func mouseEnteredHandler() http.HandlerFunc {
 	}
 }
 
+func validateHandler(w http.ResponseWriter, r *http.Request) {
+	title := r.FormValue("title")
+	name := r.FormValue("name")
+	if strings.TrimSpace(title) == "" || strings.TrimSpace(name) == "" {
+		w.Write([]byte(`<button id="submit-button" type="submit" disabled>Submit</button>`))
+	} else {
+		w.Write([]byte(`<button id="submit-button" type="submit">Submit</button>`))
+	}
+}
+
 func main() {
 
 	http.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
@@ -51,7 +62,13 @@ func main() {
 		w.Write([]byte(`<p>Account page</p>`))
 	})
 
-	http.HandleFunc("/mouse_entered", logHeaders(mouseEnteredHandler()))
+	http.HandleFunc("/store", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte(`<p>thanks for purchasing</p>`))
+	})
+
+	http.HandleFunc("/validate", validateHandler)
+
+	http.HandleFunc("/mouse_entered", mouseEnteredHandler())
 
 	http.ListenAndServe(":8080", nil)
 }

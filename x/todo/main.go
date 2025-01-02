@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 
@@ -42,27 +43,33 @@ func main() {
 
 func (h handlers) getTodos(w http.ResponseWriter, r *http.Request) {
 	todos := []Todo{}
-	
-	h.db.View(func(txn *badger.Txn) error {
+	fmt.Println(todos)
+
+	err := h.db.View(func(txn *badger.Txn) error {
 		it := txn.NewIterator(badger.DefaultIteratorOptions)
 		defer it.Close()
 		prefix := []byte("todo")
 		for it.Seek(prefix); it.ValidForPrefix(prefix); it.Next() {
 			item := it.Item()
-			
-			// TODO rip all this out into a separate function so that 
-			// the abstraction is cleaner in a speration of concerns
+
+			// TODO rip all this out into a separate function so that
+			// the abstraction is cleaner in a separation of concerns
 			// I want to be able to interact with the DB in a way that
 			// is more abstracted from the HTTP handlers
 			err := item.Value(func(v []byte) error {
 				// TODO unmarshal v into a Todo struct
 				return nil
 			})
-				
-
+			if err != nil {
+				return err
+			}
+		}
 		return nil
 	})
-
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 }
 
 func (h handlers) getTodo(w http.ResponseWriter, r *http.Request) {

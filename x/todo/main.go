@@ -2,38 +2,30 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 
-	badger "github.com/dgraph-io/badger/v4"
 	chi "github.com/go-chi/chi/v5"
 	middleware "github.com/go-chi/chi/v5/middleware"
 )
 
 type handlers struct {
-	db *badger.DB
+	store Store
 }
 
 func main() {
 
-	// Initialize Badger
-	db, err := badger.Open(badger.DefaultOptions("./badgerdb"))
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer db.Close()
+	h := handlers{store: NewBadgerStore()}
+	defer h.store.Close()
 
 	r := chi.NewRouter()
 
 	r.Use(middleware.Logger)
 
-	h := handlers{db: db}
-
 	r.Route("/todos", func(r chi.Router) {
 		r.Get("/", h.getTodos)
+		r.Post("/", h.createTodo)
 		r.Route("/{todoID}", func(r chi.Router) {
 			r.Get("/", h.getTodo)
-			r.Post("/", h.createTodo)
 			r.Put("/", h.updateTodo)
 			r.Delete("/", h.deleteTodo)
 		})
@@ -42,54 +34,49 @@ func main() {
 }
 
 func (h handlers) getTodos(w http.ResponseWriter, r *http.Request) {
-	todos := []Todo{}
-	fmt.Println(todos)
-
-	err := h.db.View(func(txn *badger.Txn) error {
-		it := txn.NewIterator(badger.DefaultIteratorOptions)
-		defer it.Close()
-		prefix := []byte("todo")
-		for it.Seek(prefix); it.ValidForPrefix(prefix); it.Next() {
-			item := it.Item()
-
-			// TODO rip all this out into a separate function so that
-			// the abstraction is cleaner in a separation of concerns
-			// I want to be able to interact with the DB in a way that
-			// is more abstracted from the HTTP handlers
-			err := item.Value(func(v []byte) error {
-				// TODO unmarshal v into a Todo struct
-				return nil
-			})
-			if err != nil {
-				return err
-			}
-		}
-		return nil
-	})
+	todos, err := h.store.All()
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+	fmt.Println(todos)
 }
 
 func (h handlers) getTodo(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("getTodo"))
+	id := chi.URLParam(r, "todoID")
+	todo, err := h.store.Get(id)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	fmt.Println(todo)
 }
 
 func (h handlers) createTodo(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("createTodo"))
+	h.store.New(NewTodo("test"))
 }
 
 func (h handlers) updateTodo(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("updateTodo"))
+	id := chi.URLParam(r, "todoID")
+	todo := Todo{
+		ID:          id,
+		Description: "test",
+		Done:        true,
+	}
+	err := h.store.Update(todo)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
 }
 
 func (h handlers) deleteTodo(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("deleteTodo"))
-}
-
-type Todo struct {
-	ID          string
-	Description string
-	Done        bool
+	id := chi.URLParam(r, "todoID")
+	err := h.store.Delete(id)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
 }

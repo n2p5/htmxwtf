@@ -52,8 +52,28 @@ func (h handlers) getTodo(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(todo)
 }
 
+// NOTES: this is just a really rough sketch on how I wan to handle
+// submitted data. By using form data only, it simplifies the process
+// of handling the data. I can use the form data to create a new todo.
+// I need to think about string safety and how to handle that.
+
 func (h handlers) createTodo(w http.ResponseWriter, r *http.Request) {
-	h.store.New(NewTodo("test"))
+	err := r.ParseForm()
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	description := r.FormValue("description")
+
+	if description == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	h.store.New(NewTodo(description))
+
+	w.WriteHeader(http.StatusCreated)
+
 }
 
 func (h handlers) updateTodo(w http.ResponseWriter, r *http.Request) {

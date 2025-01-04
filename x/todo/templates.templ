@@ -1,0 +1,21 @@
+package main
+
+
+templ TodoPage(todos []Todo) {
+	<div>
+		<h1>Todo</h1>
+		<ul>
+			for _, todo := range todos {
+				@TodoItem(todo)
+			}
+		</ul>
+	</div>
+}
+
+templ TodoItem(todo Todo) {
+	<li>{ todo.Description }</li>
+}
+
+templ Hello(name string) {
+	<div>Hello, { name }</div>
+}

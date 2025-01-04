@@ -1,13 +1,11 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"net/http"
 
 	chi "github.com/go-chi/chi/v5"
 	middleware "github.com/go-chi/chi/v5/middleware"
-	"github.com/n2p5/htmxwtf/x/todo/templates"
 )
 
 type handlers struct {
@@ -33,7 +31,7 @@ func main() {
 		})
 	})
 	r.Get("/hello", func(w http.ResponseWriter, r *http.Request) {
-		templates.Hello("blah").Render(context.TODO(), w)
+		Hello("blah").Render(r.Context(), w)
 	})
 	http.ListenAndServe(":3000", r)
 }
@@ -44,6 +42,7 @@ func (h handlers) getTodos(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+	TodoPage(todos).Render(r.Context(), w)
 	fmt.Println(todos)
 }
 

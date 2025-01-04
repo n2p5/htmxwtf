@@ -1,11 +1,13 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 
 	chi "github.com/go-chi/chi/v5"
 	middleware "github.com/go-chi/chi/v5/middleware"
+	"github.com/n2p5/htmxwtf/x/todo/templates"
 )
 
 type handlers struct {
@@ -29,6 +31,9 @@ func main() {
 			r.Put("/", h.updateTodo)
 			r.Delete("/", h.deleteTodo)
 		})
+	})
+	r.Get("/hello", func(w http.ResponseWriter, r *http.Request) {
+		templates.Hello("blah").Render(context.TODO(), w)
 	})
 	http.ListenAndServe(":3000", r)
 }

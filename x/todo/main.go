@@ -30,9 +30,8 @@ func main() {
 			r.Delete("/", h.deleteTodo)
 		})
 	})
-	r.Get("/hello", func(w http.ResponseWriter, r *http.Request) {
-		Hello("blah").Render(r.Context(), w)
-	})
+	r.Get("/assets/*", http.StripPrefix("/assets/", http.FileServer(http.Dir("assets"))).ServeHTTP)
+
 	http.ListenAndServe(":3000", r)
 }
 
@@ -43,7 +42,6 @@ func (h handlers) getTodos(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	TodoPage(todos).Render(r.Context(), w)
-	fmt.Println(todos)
 }
 
 func (h handlers) getTodo(w http.ResponseWriter, r *http.Request) {

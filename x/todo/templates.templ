@@ -1,10 +1,35 @@
 package main
 
 
+templ Header(title string) {
+		<head>
+			<title>{ title }</title>
+			<link rel="stylesheet" href="/assets/pico.2.0.6.min.css">
+			<script src="/assets/htmx.2.0.4.min.js"></script>
+		</head>
+}
+
+templ Footer() {
+		<footer>
+		</footer>
+}
+
 templ TodoPage(todos []Todo) {
+	<html>
+		@Header("Todo")
+		<body>
+			<main class="container">
+				@Todos(todos)
+				@Footer()
+			</main>
+		</body>
+	</html>
+}
+
+templ Todos(todos []Todo) {
 	<div>
 		<h1>Todo</h1>
-		<ul>
+		<ul >
 			for _, todo := range todos {
 				@TodoItem(todo)
 			}
@@ -13,9 +38,15 @@ templ TodoPage(todos []Todo) {
 }
 
 templ TodoItem(todo Todo) {
-	<li>{ todo.Description }</li>
-}
-
-templ Hello(name string) {
-	<div>Hello, { name }</div>
+    <li id={ todo.ID } style="display: flex; align-items: center;">
+        <input type="checkbox" if todo.Done { checked } style="flex: 0 0 20px;">
+        <input type="text" value={ todo.Description } 
+			if todo.Done { 
+				style="flex: 1; text-decoration: line-through;"
+			 } else {
+				style="flex: 1;"
+			 }
+			
+		>
+    </li>
 }

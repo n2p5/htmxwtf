@@ -26,3 +26,5 @@ go.work.sum
 
 # BadgerDB files
 badgerdb
+
+todo.server

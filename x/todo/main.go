@@ -33,6 +33,7 @@ func main() {
 	r.Get("/assets/*", http.StripPrefix("/assets/", http.FileServer(http.Dir("assets"))).ServeHTTP)
 
 	http.ListenAndServe(":3000", r)
+
 }
 
 func (h handlers) getTodos(w http.ResponseWriter, r *http.Request) {

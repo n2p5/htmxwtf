@@ -85,6 +85,7 @@ func (s *BadgerStore) New(todo Todo) error {
 		if err != nil {
 			return err
 		}
+
 		return txn.Set([]byte(todo.ID), buf.Bytes())
 	})
 }

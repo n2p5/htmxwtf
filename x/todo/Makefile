@@ -21,4 +21,4 @@ clean:
 dev:
 	@find . -type f \( \
 	-name '*.go' ! -name '*_templ.go' -o -name '*.templ' \) \
-  | entr -r sh -c 'make run'
+	| entr -r sh -c 'make run'

@@ -27,6 +27,7 @@ func main() {
 		r.Route("/{todoID}", func(r chi.Router) {
 			r.Get("/", h.getTodo)
 			r.Put("/", h.updateTodo)
+			r.Put("/toggle", h.updateTodoToggle)
 			r.Delete("/", h.deleteTodo)
 		})
 	})
@@ -92,6 +93,21 @@ func (h handlers) updateTodo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.WriteHeader(http.StatusOK)
+}
+
+func (h handlers) updateTodoToggle(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "todoID")
+	todo, err := h.store.Get(id)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	todo.Done = !todo.Done
+	if err := h.store.Update(todo); err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	TodoItem(todo).Render(r.Context(), w)
 }
 
 func (h handlers) deleteTodo(w http.ResponseWriter, r *http.Request) {

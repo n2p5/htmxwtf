@@ -39,14 +39,17 @@ templ Todos(todos []Todo) {
 
 templ TodoItem(todo Todo) {
     <li id={ todo.ID } style="display: flex; align-items: center;">
-        <input type="checkbox" if todo.Done { checked } style="flex: 0 0 20px;">
+        <input
+		    hx-target="closest li"
+        	hx-swap="outerHTML"	
+			hx-put={"/todos/" + todo.ID + "/toggle"}
+			type="checkbox" if todo.Done { checked } style="flex: 0 0 20px;">
         <input type="text" value={ todo.Description } 
 			if todo.Done { 
 				style="flex: 1; text-decoration: line-through;"
 			 } else {
 				style="flex: 1;"
 			 }
-			
 		>
     </li>
 }

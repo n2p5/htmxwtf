@@ -102,7 +102,18 @@ func (h handlers) updateTodoToggle(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	todo.Done = !todo.Done
+	if err := r.ParseForm(); err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	val := r.Form["done"]
+
+	if len(val) > 0 {
+		todo.Done = true
+	} else {
+		todo.Done = false
+	}
+
 	if err := h.store.Update(todo); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return

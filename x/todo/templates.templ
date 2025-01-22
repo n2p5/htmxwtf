@@ -43,6 +43,7 @@ templ TodoItem(todo Todo) {
 		    hx-target="closest li"
         	hx-swap="outerHTML"	
 			hx-put={"/todos/" + todo.ID + "/toggle"}
+			name="done"
 			type="checkbox" if todo.Done { checked } style="flex: 0 0 20px;">
         <input type="text" value={ todo.Description } 
 			if todo.Done { 

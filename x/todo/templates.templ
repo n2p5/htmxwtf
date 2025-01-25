@@ -17,7 +17,7 @@ templ Footer() {
 templ TodoPage(todos []Todo) {
 	<html>
 		@Header("Todo App")
-		<body>
+        <body>
 			<main class="container">
 				@Todos(todos)
 				@Footer()
@@ -58,7 +58,9 @@ templ TodoItem(todo Todo) {
         	hx-swap="outerHTML"	
 			hx-put={"/todos/" + todo.ID + "/toggle"}
 			name="done"
-			type="checkbox" if todo.Done { checked } style="flex: 0 0 20px;">
+			type="checkbox" if todo.Done { checked } 
+			style="transform: scale(1.6); transform-origin: center; margin-right: 1rem; margin-bottom: 1rem;"
+			>
         <input type="text" value={ todo.Description }  name="description"
 			if todo.Done { 
 				style="flex: 1; text-decoration: line-through;"

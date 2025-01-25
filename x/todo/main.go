@@ -21,12 +21,15 @@ func main() {
 
 	r.Use(middleware.Logger)
 
+	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "/todos", http.StatusFound)
+	})
 	r.Route("/todos", func(r chi.Router) {
 		r.Get("/", h.getTodos)
 		r.Post("/", h.createTodo)
 		r.Route("/{todoID}", func(r chi.Router) {
 			r.Get("/", h.getTodo)
-			r.Put("/", h.updateTodo)
+			r.Put("/description", h.updateTodoDescription)
 			r.Put("/toggle", h.updateTodoToggle)
 			r.Delete("/", h.deleteTodo)
 		})
@@ -43,6 +46,7 @@ func (h handlers) getTodos(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+	Sort(todos)
 	TodoPage(todos).Render(r.Context(), w)
 }
 
@@ -69,30 +73,31 @@ func (h handlers) createTodo(w http.ResponseWriter, r *http.Request) {
 	}
 	description := r.FormValue("description")
 
-	if description == "" {
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-
-	h.store.New(NewTodo(description))
+	todo := NewTodo(description)
+	h.store.New(todo)
 
 	w.WriteHeader(http.StatusCreated)
-
+	TodoItem(todo).Render(r.Context(), w)
 }
 
-func (h handlers) updateTodo(w http.ResponseWriter, r *http.Request) {
+func (h handlers) updateTodoDescription(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "todoID")
-	todo := Todo{
-		ID:          id,
-		Description: "test",
-		Done:        true,
-	}
-	err := h.store.Update(todo)
+	todo, err := h.store.Get(id)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	w.WriteHeader(http.StatusOK)
+	if err := r.ParseForm(); err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	todo.Description = r.Form["description"][0]
+
+	if err := h.store.Update(todo); err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	TodoItem(todo).Render(r.Context(), w)
 }
 
 func (h handlers) updateTodoToggle(w http.ResponseWriter, r *http.Request) {

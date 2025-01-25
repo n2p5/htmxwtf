@@ -29,28 +29,46 @@ templ TodoPage(todos []Todo) {
 templ Todos(todos []Todo) {
 	<div>
 		<h1>Todo</h1>
-		<ul >
+		<ul id="list">
 			for _, todo := range todos {
 				@TodoItem(todo)
 			}
 		</ul>
+		<button
+			hx-post="/todos"
+			hx-target="#list"
+			hx-swap="beforeend">
+			New Todo
+		</button>
 	</div>
 }
 
 templ TodoItem(todo Todo) {
-    <li id={ todo.ID } style="display: flex; align-items: center;">
+    <li 
+		id={ todo.ID } 
+		style="display: flex; align-items: center;"
+		if todo.Done { 
+			hx-delete={"/todos/" + todo.ID}
+			hx-trigger="load delay:3s"
+			hx-swap="outerHTML"
+		}
+	>
         <input
 		    hx-target="closest li"
         	hx-swap="outerHTML"	
 			hx-put={"/todos/" + todo.ID + "/toggle"}
 			name="done"
 			type="checkbox" if todo.Done { checked } style="flex: 0 0 20px;">
-        <input type="text" value={ todo.Description } 
+        <input type="text" value={ todo.Description }  name="description"
 			if todo.Done { 
 				style="flex: 1; text-decoration: line-through;"
 			 } else {
 				style="flex: 1;"
 			 }
+			hx-target="closest li"
+			hx-swap="outerHTML"
+			hx-put={"/todos/" + todo.ID + "/description"}
+			hx-trigger="keyup changed delay:1s"
 		>
     </li>
 }

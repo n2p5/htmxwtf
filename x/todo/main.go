@@ -46,7 +46,7 @@ func (h handlers) getTodos(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	Sort(todos)
+	sort(todos)
 	TodoPage(todos).Render(r.Context(), w)
 }
 

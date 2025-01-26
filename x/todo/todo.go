@@ -26,7 +26,7 @@ func NewID() string {
 	return "todo_" + cuid2.Generate()
 }
 
-func Sort(todos []Todo) {
+func sort(todos []Todo) {
 	slices.SortFunc(todos, func(a, b Todo) int {
 		if a.CreatedAt < b.CreatedAt {
 			return -1
@@ -38,7 +38,7 @@ func Sort(todos []Todo) {
 	})
 }
 
-func ReverseSort(todos []Todo) {
+func reverseSort(todos []Todo) {
 	slices.SortFunc(todos, func(a, b Todo) int {
 		if a.CreatedAt > b.CreatedAt {
 			return -1

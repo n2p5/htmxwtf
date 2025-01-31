@@ -71,6 +71,7 @@ templ TodoItem(todo Todo) {
 			hx-swap="outerHTML"
 			hx-put={"/todos/" + todo.ID + "/description"}
 			hx-trigger="keyup changed delay:1s"
+			autofocus
 		>
     </li>
 }
